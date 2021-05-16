@@ -1,11 +1,10 @@
 package com.dovidio.quarkus.jdbc.sqlite.it;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
-
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
 public class QuarkusJdbcSqliteResourceTest {
@@ -16,6 +15,6 @@ public class QuarkusJdbcSqliteResourceTest {
                 .when().get("/quarkus-jdbc-sqlite")
                 .then()
                 .statusCode(200)
-                .body(is("msg=It Works from SQLITE!!!, active=true"));
+                .body(is("connection works"));
     }
 }

@@ -5,16 +5,15 @@ import io.quarkus.agroal.spi.JdbcDriverBuildItem;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.processor.BuiltinScope;
 import io.quarkus.datasource.deployment.spi.DefaultDataSourceDbKindBuildItem;
-import io.quarkus.datasource.deployment.spi.DevServicesDatasourceConfigurationHandlerBuildItem;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.SslNativeConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.JniRuntimeAccessBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceDirectoryBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
+import org.sqlite.Function;
+import org.sqlite.ProgressHandler;
 import org.sqlite.core.NativeDB;
 
 public class QuarkusJdbcSqliteProcessor {
@@ -28,14 +27,8 @@ public class QuarkusJdbcSqliteProcessor {
     }
 
     @BuildStep
-    void registerDriver(BuildProducer<JdbcDriverBuildItem> jdbcDriver,
-                        SslNativeConfigBuildItem sslNativeConfigBuildItem) {
+    void registerDriver(BuildProducer<JdbcDriverBuildItem> jdbcDriver) {
         jdbcDriver.produce(new JdbcDriverBuildItem(DB_KIND, "org.sqlite.JDBC", null));
-    }
-
-    @BuildStep
-    DevServicesDatasourceConfigurationHandlerBuildItem devDbHandler() {
-        return DevServicesDatasourceConfigurationHandlerBuildItem.jdbc(DB_KIND);
     }
 
     @BuildStep
@@ -50,22 +43,18 @@ public class QuarkusJdbcSqliteProcessor {
     }
 
     @BuildStep
-    void registerServiceBinding(Capabilities capabilities,
-                                BuildProducer<ServiceProviderBuildItem> serviceProvider,
-                                BuildProducer<DefaultDataSourceDbKindBuildItem> dbKind) {
+    void registerServiceBinding(BuildProducer<DefaultDataSourceDbKindBuildItem> dbKind) {
         dbKind.produce(new DefaultDataSourceDbKindBuildItem(DB_KIND));
     }
 
     @BuildStep
-    public void registerNativeBinaries(BuildProducer<NativeImageResourceDirectoryBuildItem> resource) {
+    void registerNativeBinaries(BuildProducer<NativeImageResourceDirectoryBuildItem> resource) {
         resource.produce(new NativeImageResourceDirectoryBuildItem("org/sqlite/native"));
     }
 
     @BuildStep
-    public void registerClassesThatAreAccessedViaJni(BuildProducer<JniRuntimeAccessBuildItem> jniRuntimeAccessibleClasses) {
+    void registerClassesThatAreAccessedViaJni(BuildProducer<JniRuntimeAccessBuildItem> jniRuntimeAccessibleClasses) {
         jniRuntimeAccessibleClasses
-                .produce(new JniRuntimeAccessBuildItem(true, true, false, NativeDB.class));
-//        jniRuntimeAccessibleClasses
-//                .produce(new JniRuntimeAccessBuildItem(true, true, true, NativeDB.class, Function.class, Function.Aggregate.class, ProgressHandler.class, Function.Window.class, org.sqlite.core.DB.ProgressObserver.class));
+                .produce(new JniRuntimeAccessBuildItem(true, true, true, NativeDB.class, Function.class, Function.Aggregate.class, ProgressHandler.class, Function.Window.class, org.sqlite.core.DB.ProgressObserver.class));
     }
 }

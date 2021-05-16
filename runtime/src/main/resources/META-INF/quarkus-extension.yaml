@@ -1,9 +1,11 @@
 name: Quarkus Jdbc Sqlite
-#description: Quarkus Jdbc Sqlite ...
+description: Quarkus Jdbc Sqlite
 metadata:
-#  keywords:
-#    - quarkus-jdbc-sqlite
-#  guide: ...
-#  categories:
-#    - "miscellaneous"
-#  status: "preview"
+  keywords:
+    - quarkus-jdbc-sqlite
+    - sqlite
+    - sqlite3
+  guide: ...
+  categories:
+    - "jdbc driver"
+  status: "preview"
